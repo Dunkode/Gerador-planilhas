@@ -4,7 +4,7 @@ Olá!
 O seguinte repositório contém um código que torna possível realizar a criação de planilhas através de um Banco de dados.
 
 ## Problema
-Existem sistemas que lidam com Banco de Dados, mas não oferecem a possibilidade de gerar uma planilha editável com aquelas informações ~~como na minha :c~~
+Existem sistemas que lidam com Banco de Dados, mas não oferecem a possibilidade de gerar uma planilha editável com aquelas informações ~~como na minha :c~~\n
 Para resolver isso, estou desenvolvendo esse programa 🙂.
 
 
