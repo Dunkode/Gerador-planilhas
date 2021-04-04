@@ -6,14 +6,26 @@ BD = ConexaoBD()
 while True:
     
     print('{:-^50}'.format('MENU'))
-    print('(1) Gerar planilha com a relação de cliente-vendedor\n'+
-        '(2) Adminstração do Banco de Dados\n' +
-        '(3) ?????????\n')
+    print(
+'''
+(1) Gerar planilha
+(2) Adminstração do Banco de Dados
+(3) ?????????
+(0) Fechar programa
+''')
 
-    escolha = int(input())
+    escolha = int(input("Digite o número da opção desejada e tecle Enter: "))
 
     if escolha == 1:
-        pass
+        while True:
+            print('''(1) Colar consulta pronta
+                    (2) Selecionar tabela, colunas e condições
+                    (0) Voltar ao menu anterior''')
+            escolha = int(input("Digite o número da opção desejada e tecle Enter: "))
+
+            if escolha == 1:
+                with BD.conectarBanco as dataBaseCon:
+                    dataBaseCon.execute(input("Cole a consulta que você querna planilha e tecle Enter\n"))
 
     if escolha == 2:
 

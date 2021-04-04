@@ -52,7 +52,7 @@ class ConexaoBD():
                 raise erro
 
 
-    def quitcarregarConexoesSalvas(self):
+    def carregarConexoesSalvas(self):
         try:
             with open(os.path.join(self.dir_pad, "conexoes_salvas.dat"), 'rb') as dataFile:
                 conexoes = pickle.load(dataFile)
