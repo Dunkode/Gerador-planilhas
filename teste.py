@@ -1,14 +1,20 @@
 from ConexaoBD import *
 import os
 import pickle
-import glob
+import xlwt
+import cx_Oracle
 
 from tkinter import filedialog
 
-dic = {}
+BD = ConexaoBD()
+with BD.conectarBanco() as connection:
+    cursor = connection.cursor()
+    cursor
+    cursor.execute("Select * from cliente")
+    resultado = cursor.fetchall()
 
-print(len(dic))
+    a = cursor.description
+    print(a[0])
+    col_names = [row[0] for row in cursor.description]
 
-'''
-initOracleClient()
-initOracleClient()'''
+    print(col_names)
