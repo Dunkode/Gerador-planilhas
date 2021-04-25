@@ -1,6 +1,8 @@
 from ConexaoBD import *
+from WorkbookUtil import *
 
 BD = ConexaoBD()
+workbook = WorkbooktUtil()
 
 
 while True:
@@ -24,9 +26,19 @@ while True:
             escolha = int(input("Digite o número da opção desejada e tecle Enter: "))
 
             if escolha == 1:
-                with BD.conectarBanco as dataBaseCon:
-                    dataBaseCon.execute(input("Cole a consulta que você querna planilha e tecle Enter\n"))
+                workName = input("Escolha um nome para o arquivo da planilha:\n")
+                with BD.conectarBanco() as dataBaseCon:         
+                    cursor = dataBaseCon.cursor()
+                    cursor.execute(input("Cole a consulta que você quer na planilha e tecle Enter\n")) 
+                    result =  cursor.fetchall()
+                    colNames = [i[0] for i in cursor.description]
 
+                    workbook.createWorkbook(result, workName, colNames)
+
+            elif escolha == 0:
+                break
+
+                    
     if escolha == 2:
 
         while True:
