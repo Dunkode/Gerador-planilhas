@@ -1,8 +1,10 @@
-from xlwt import *
-import xlwt
+import openpyxl 
 from time import sleep
 from tkinter import filedialog
 from os import mkdir, path, getcwd
+
+
+
 
 class WorkbooktUtil():
     def __init__(self):
@@ -39,8 +41,8 @@ class WorkbooktUtil():
 
     def createWorkbook(self, dataToWrite, workbookName, columnNames):
         try:
-            workbook = Workbook(encoding='UTF-8') 
-            sheet = workbook.add_sheet("Sheet", cell_overwrite_ok= True)
+            workbook = openpyxl.Workbook() 
+            sheet = workbook.create_sheet("Sheet")
             sheet = self.writeData(dataToWrite, sheet, columnNames)
             workbook.save(path.join(self.saveDir, workbookName+".xls"))
 
@@ -50,13 +52,12 @@ class WorkbooktUtil():
     def writeData(self, dataToWrite, sheetToWrite, columnNames):
         
         try:
-            style = easyxf("font: bold on; align: wrap off, vert centre, horiz center")
             for column, name in enumerate(columnNames):
-                sheetToWrite.write(0, column, label=name, style=style)
+                sheetToWrite.cell(row=0, column=column, value=name,)
 
             for row, data in enumerate(dataToWrite):
                 for column in range(len(data)):
-                    sheetToWrite.write(row + 1, column, label=data[column])
+                    sheetToWrite.write(row=row + 1, column=column, value=data[column])
             
             return sheetToWrite
         

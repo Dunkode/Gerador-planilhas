@@ -66,7 +66,7 @@ while True:
 
 
             elif escolha == 2:
-                try:
+
                     print('='*50)
                     print('Nome da conexão: ', BD.nome_conexao_selecionada)
                     print('Usuário: ', BD.conexao_selecionada['usuario'])
@@ -74,8 +74,6 @@ while True:
                     print('Nome do Serviço: ', BD.conexao_selecionada['servico'])
                     print('Conexão padrão? ', BD.conexao_selecionada['padrao'])
                     print('='*50)
-                except:
-                    print('Sem conexão padrão selecionada!\nAdicione uma nova conexão ou escolha uma já existente.')
 
 
             elif escolha == 3:
@@ -86,7 +84,6 @@ while True:
                 nome_conexao = input('Escolha quais das coxeções você quer excluir: \n\t{}'.format(BD.conexoes.keys()))
                 
                 BD.removerConexao(nome_conexao)
-                BD.selecionarConexaoPadrao()
 
 
             elif escolha == 0:
