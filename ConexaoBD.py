@@ -1,5 +1,6 @@
 import cx_Oracle
-from src.PresistenceManager import PersistenceManager
+from src.PersistenceManager import PersistenceManager
+
 pm = PersistenceManager()
 
 class ConexaoBD():
@@ -9,7 +10,7 @@ class ConexaoBD():
         self.dirOraClient = pm.loadOracleClient()
         self.conexoes = pm.loadConections()
         self.nome_conexao_selecionada = ''
-        self.conexao_selecionada = self.pegarConexaoPadrao()
+        self.conexao_selecionada = self.selectDefaultConection()
             
 
     def isConnectionsEmpty(self):
@@ -39,11 +40,12 @@ class ConexaoBD():
                    'senha' : senha,
                    'IP' : IP,
                    'servico' : servico,
-                   'padrao': 's'}}
+                   'padrao': True}}
+
         return conexao
 
 
-    def criarConexao(self):
+    def createConection(self):
         nome_conexao = input('Digite o nome da Conexão: ')
         usuario = input('Digite o usuário de acesso ao Banco: ')
         senha = input('Digite a senha de acesso ao Banco: ')
@@ -71,71 +73,101 @@ class ConexaoBD():
                    'servico' : servico,
                    'padrao': padrao}}
 
-        self.selecionarConexaoPadrao(nome_conexao)
-        
+
         return conexao
         
 
-    def adicionarConexao(self):
-        self.conexoes.update(self.criarConexao())
-        pm.addConectionToFile(self.conexoes)
-
-    def removerConexao(self, nome_conexao):
-        if self.isConnectionsEmpty():
-            print("Você não tem conexões para remover!\nPor favor, insira uma:")
-            self.createFirstConection()
-        else:
-            self.conexoes.pop(nome_conexao)
-            pm.addConectionToFile(self.conexoes)
-            self.selecionarConexaoPadrao()
-            if self.isConnectionsEmpty():
-                print("A conexão removida era a última!\nInsira uma nova:\n")
-                self.createFirstConection()
-                pm.addConectionToFile(self.conexoes)
-
-
-    def selecionarConexaoPadrao(self, conec_selecionada=None):
-        try: 
-            if conec_selecionada is None and not self.isConnectionsEmpty():
-                conec_selecionada = input('Escolha uma dessas conexões para ser a padrão:\n\t{}\n>> '.format(self.conexoes.keys()))
-            elif self.isConnectionsEmpty(): 
-                print("Você não tem ennhuma conexão cadastrada!")
-        except:
-            print('Não existe nenhuma conexão com esse nome.')
-            self.selecionarConexaoPadrao()
-
-        for conexao in self.conexoes:
-            if self.conexoes[conexao]['padrao'] is True or conec_selecionada != conexao:
-                self.conexoes[conexao]['padrao'] = False
-            else:
-                self.conexoes[conexao]['padrao'] = True
-            
-        self.conexao_selecionada = self.pegarConexaoPadrao()
-        pm.addConectionToFile(self.conexoes)
-                    
-
+    def addConection(self):
+        conection_registred = dict()
         
+        if self.isConnectionsEmpty() is True:
+            self.conexoes.update(self.createFirstConection())
+            self.conexao_selecionada = self.selectDefaultConection()
+        else:
+            conection_registred = self.createConection()
+            name_conection = list(conection_registred)[0]
+            while name_conection in self.conexoes:
+                name_conection = input('Já exite uma conexão com esse nome, por favor, escolha outro:\n>> ')
+                conection_registred[name_conection]
+
+            else:
+                self.conexoes.update(conection_registred)
+                
+                if conection_registred[name_conection]['padrao'] is True:
+                    self.ajustDefaultConections(name_conection)
+                    self.conexao_selecionada = self.selectDefaultConection()
+        
+            pm.addConectionToFile(self.conexoes)
+            return conection_registred
 
 
-    def pegarConexaoPadrao(self):
+    def removerConexao(self, nome_conexao, isEmpty):
+        if isEmpty:
+            print("Você não tem conexões para remover!\nPor favor, insira uma:")
+            nome_conexao = self.addConection()
+            nome_conexao = list(nome_conexao)[0]
+        else:
+
+            if self.nome_conexao_selecionada == nome_conexao and nome_conexao in self.conexoes:
+                removed_conection = self.conexoes.pop(nome_conexao)
+                if self.isConnectionsEmpty():
+                    pass
+                else:
+                    if len(self.conexoes) == 1:
+                        self.ajustDefaultConections(list(self.conexoes)[0])
+                        self.conexao_selecionada = self.selectDefaultConection()
+                    else:
+                        print('A conexão selecionada era a padrão, selecione uma nova:')
+                        new_default_conection = input(f"{list(self.conexoes)}\n>>")
+                        self.ajustDefaultConections(new_default_conection)
+                        self.conexao_selecionada = self.selectDefaultConection()
+
+            elif nome_conexao in self.conexoes:
+                removed_conection = self.conexoes.pop(nome_conexao)
+
+            elif nome_conexao not in self.conexoes:
+                print("Conexão selecionada não existe, por favor insira uma existente.")
+                return None
+
+        if self.isConnectionsEmpty():
+            print("conexão vazia no final")
+            print("Você excluiu a última conexão. Insira uma nova: ")
+            self.addConection()
+
+        pm.addConectionToFile(self.conexoes)
+        return removed_conection
+
+
+    def ajustDefaultConections(self, conec_selecionada):
+        for conexao in self.conexoes:
+            if conec_selecionada == conexao:
+                self.conexoes[conexao]['padrao'] = True
+            else:
+                self.conexoes[conexao]['padrao'] = False                 
+
+    def selectDefaultConection(self):
         for conexao in self.conexoes:
             if self.conexoes[conexao]['padrao'] is True:
                 self.nome_conexao_selecionada = conexao
-                return self.conexoes[conexao]  
+                return self.conexoes[conexao]
+        return None
 
     
     def conectarBanco(self):
         try:
-            self.initOracleClient()
-            banco_conectado = cx_Oracle.connect(self.conexao_selecionada['usuario'] + '/' +
-                                                self.conexao_selecionada['senha'] + '@' +
-                                                self.conexao_selecionada['IP'] + '/' +
-                                                self.conexao_selecionada['servico'],
-                                                cclass = "HOL",
-                                                purity = cx_Oracle.ATTR_PURITY_SELF)
+            if self.conexao_selecionada is None:
+                print("Não há conexão padrão. Crie uma nova para fazer a conexão com o banco.")
+            else:
+                self.initOracleClient()
+                banco_conectado = cx_Oracle.connect(self.conexao_selecionada['usuario'] + '/' +
+                                                    self.conexao_selecionada['senha'] + '@' +
+                                                    self.conexao_selecionada['IP'] + '/' +
+                                                    self.conexao_selecionada['servico'],
+                                                    cclass = "HOL",
+                                                    purity = cx_Oracle.ATTR_PURITY_SELF)
 
-            print(f'Conexão com o Banco {self.nome_conexao_selecionada} realizada!')
-            return banco_conectado
+                print(f'Conexão com o Banco {self.nome_conexao_selecionada} realizada!')
+                return banco_conectado
         except cx_Oracle.Error as erro:
             raise erro
             

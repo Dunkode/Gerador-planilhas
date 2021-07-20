@@ -20,12 +20,14 @@ while True:
 
     if escolha == 1:
         while True:
-            print('''(1) Colar consulta pronta
-                    (2) Selecionar tabela, colunas e condições
-                    (0) Voltar ao menu anterior''')
-            escolha = int(input("Digite o número da opção desejada e tecle Enter: "))
+            print('''
+(1) Colar consulta pronta
+(2) Selecionar tabela, colunas e condições
+(0) Voltar ao menu anterior
+''')
+            escolhaW = int(input("Digite o número da opção desejada e tecle Enter: "))
 
-            if escolha == 1:
+            if escolhaW == 1:
                 workName = input("Escolha um nome para o arquivo da planilha:\n")
                 with BD.conectarBanco() as dataBaseCon:         
                     cursor = dataBaseCon.cursor()
@@ -35,7 +37,7 @@ while True:
 
                     workbook.createWorkbook(result, workName, colNames)
 
-            elif escolha == 0:
+            elif escolhaW == 0:
                 break
 
                     
@@ -49,11 +51,11 @@ while True:
                 '(4) Remover conexão\n'+
                 '(0) Voltar ao menu\n')
 
-            escolha = int(input())
+            escolhaB = int(input())
 
 
-            if escolha == 1:
-                for conexao in BD.conexoes.keys():
+            if escolhaB == 1:
+                for conexao in BD.conexoes:
                     conex_aux = BD.conexoes[conexao]
                     print('='*50)
                     print('Nome da conexão: ', conexao)
@@ -65,28 +67,33 @@ while True:
                 print('='*50)
 
 
-            elif escolha == 2:
+            elif escolhaB == 2:
 
-                    print('='*50)
-                    print('Nome da conexão: ', BD.nome_conexao_selecionada)
-                    print('Usuário: ', BD.conexao_selecionada['usuario'])
-                    print('IP do Banco: ', BD.conexao_selecionada['IP'])
-                    print('Nome do Serviço: ', BD.conexao_selecionada['servico'])
-                    print('Conexão padrão? ', BD.conexao_selecionada['padrao'])
-                    print('='*50)
+                    if BD.conexao_selecionada is None:
+                        print("Não existe conexão padrão.")
+                    else:
+                        print('='*50)
+                        print('Nome da conexão: ', BD.nome_conexao_selecionada)
+                        print('Usuário: ', BD.conexao_selecionada['usuario'])
+                        print('IP do Banco: ', BD.conexao_selecionada['IP'])
+                        print('Nome do Serviço: ', BD.conexao_selecionada['servico'])
+                        print('Conexão padrão? ', BD.conexao_selecionada['padrao'])
+                        print('='*50)
 
 
-            elif escolha == 3:
-                BD.adicionarConexao()
+            elif escolhaB == 3:
+                BD.addConection()
 
             
-            elif escolha == 4: 
-                nome_conexao = input('Escolha quais das coxeções você quer excluir: \n\t{}'.format(BD.conexoes.keys()))
-                
-                BD.removerConexao(nome_conexao)
+            elif escolhaB == 4: 
+                if BD.isConnectionsEmpty() is True:
+                    BD.removerConexao(None, True)
+                else:
+                    nome_conexao = input('Escolha quais das coxeções você quer excluir: \n\t{}'.format(BD.conexoes.keys()))
+                    BD.removerConexao(nome_conexao, False)
 
 
-            elif escolha == 0:
+            elif escolhaB == 0:
                 break
 
     
