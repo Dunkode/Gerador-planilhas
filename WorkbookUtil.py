@@ -26,11 +26,11 @@ class WorkbooktUtil():
         
         try:
             for column, name in enumerate(columnNames):
-                sheetToWrite.cell(row=0, column=column, value=name,)
+                sheetToWrite.cell(row=1, column=column + 1, value=name,)
 
             for row, data in enumerate(dataToWrite):
-                for column in range(len(data)):
-                    sheetToWrite.write(row=row + 1, column=column, value=data[column])
+                for column in range(1, len(data)):
+                    sheetToWrite.cell(row=row + 1, column=column, value=data[column])
             
             return sheetToWrite
         

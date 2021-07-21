@@ -49,6 +49,7 @@ while True:
                 '(2) Visualizar conexão selecionada (padrão)\n' +
                 '(3) Adicionar nova Conexão\n'+
                 '(4) Remover conexão\n'+
+                '(5) Editar conexão\n'+
                 '(0) Voltar ao menu\n')
 
             escolhaB = int(input())
@@ -73,11 +74,11 @@ while True:
                         print("Não existe conexão padrão.")
                     else:
                         print('='*50)
-                        print('Nome da conexão: ', BD.nome_conexao_selecionada)
-                        print('Usuário: ', BD.conexao_selecionada['usuario'])
-                        print('IP do Banco: ', BD.conexao_selecionada['IP'])
-                        print('Nome do Serviço: ', BD.conexao_selecionada['servico'])
-                        print('Conexão padrão? ', BD.conexao_selecionada['padrao'])
+                        print('Nome da conexão:', BD.conexao_selecionada)
+                        print('Usuário:', BD.conexoes[BD.conexao_selecionada]['usuario'])
+                        print('IP do Banco:', BD.conexoes[BD.conexao_selecionada]['IP'])
+                        print('Nome do Serviço:', BD.conexoes[BD.conexao_selecionada]['servico'])
+                        print('Conexão padrão?', BD.conexoes[BD.conexao_selecionada]['padrao'])
                         print('='*50)
 
 
@@ -86,11 +87,10 @@ while True:
 
             
             elif escolhaB == 4: 
-                if BD.isConnectionsEmpty() is True:
-                    BD.removerConexao(None, True)
-                else:
-                    nome_conexao = input('Escolha quais das coxeções você quer excluir: \n\t{}'.format(BD.conexoes.keys()))
-                    BD.removerConexao(nome_conexao, False)
+                BD.popConection()
+
+            elif escolhaB == 5:
+                BD.editConection()
 
 
             elif escolhaB == 0:
